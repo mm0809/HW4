@@ -65,7 +65,7 @@ void BBCar::park(int dir, int d1, int d2, int left_turn_time) {
             ThisThread::sleep_for(400);
 
             goStraight(100);
-            ThisThread::sleep_for((d2 + 5) * 5 * 10);
+            ThisThread::sleep_for((d2 + 25) * 5 * 10);
 
             stop();
             ThisThread::sleep_for(300);
@@ -77,12 +77,28 @@ void BBCar::park(int dir, int d1, int d2, int left_turn_time) {
             ThisThread::sleep_for(300);
 
             goStraight(100);
-            ThisThread::sleep_for((d1 + 7) * 8 * 10);
+            ThisThread::sleep_for((d1 + 5) * 8 * 10);
 
             stop();
             break;
 
         case 4:
+            goStraight(-100);
+            ThisThread::sleep_for((d2 + 5) * 5 * 10);
+
+            stop();
+            ThisThread::sleep_for(400);
+
+            turn(-70, 0.7);
+            ThisThread::sleep_for(left_turn_time);
+
+            stop();
+            ThisThread::sleep_for(300);
+
+            goStraight(100);
+            ThisThread::sleep_for((d1 + 27) * 8 * 10);
+
+            stop();
             break;
 
         case 5:
