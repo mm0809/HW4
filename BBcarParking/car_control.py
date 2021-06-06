@@ -12,7 +12,19 @@ class _Getch:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
+cnt = 0
+times = 1
+time_scal = 0.01
+
 def get():
+    global times
+    global time_scal
+
+    left_turn_time = 1100
+    direction = 1
+    d1 = 0
+    d2 = 0
+
     inkey = _Getch()
     while(1):
         k=inkey()
@@ -21,26 +33,52 @@ def get():
         k2 = inkey()
         k3 = inkey()
         if k3=='A':
-            print ("up")
-            s.write("/goStraight/run 100 \n".encode())
-            time.sleep(1)
+            print ("up", times)
+            s.write("/goStraight/run 70 \n".encode())
+            if times == 0:
+                time.sleep(time_scal)
+            else:
+                for x in range(times):
+                    time.sleep(time_scal)
+                times = 0
         if k3=='B':
-            print ("down")
-            s.write("/goStraight/run -100 \n".encode())
-            time.sleep(1)
+            print ("down", times)
+            s.write("/goStraight/run -70 \n".encode())
+            if times == 0:
+                time.sleep(time_scal)
+            else:
+                for x in range(times):
+                    time.sleep(time_scal)
+                times = 0
         if k3=='C':
-            print ("right")
-            s.write("/turn/run 100 -0.3 \n".encode())
-            time.sleep(1)
+            print ("right", times)
+            s.write("/turn/run 70 -0.7 \n".encode())
+            if times == 0:
+                time.sleep(time_scal)
+            else:
+                for x in range(times):
+                    time.sleep(time_scal)
+                times = 0
         if k3=='D':
-            print ("left")
-            s.write("/turn/run 100 0.3 \n".encode())
-            time.sleep(0.2)
-        #time.sleep(1)
+            print ("left", times)
+            left_turn_time = input("left_turn_time: ")
+
+            s.write(("/park/run 5 1 1 " + str(left_turn_time) +"\n").encode())
         s.write("/stop/run \n".encode())
+    elif k=='t':
+        print ("call rpc_park")
+        left_turn_time = input("left_turn_time: ")
+        direction = input("direction: ")
+        d1 = input("d1: ")
+        d2 = input("d2: ")
+
+        s.write(("/park/run " + str(direction) + " " + str(d1) + " " + str(d2) + " " + str(left_turn_time) +"\n").encode())
     elif k=='q':
         print ("quit")
         return 0
+    elif k >= '0' and k <= '9' :
+        times *= 10
+        times += ord(k) - ord('0')
     else:
         print ("not an arrow key!")
     return 1
