@@ -1,6 +1,6 @@
 #include "bbcar.h"
 
-#define NORMAL_FACTOR (0.375)
+#define NORMAL_FACTOR (0.4) // 0.375
 
 // servo0: left side
 // servo1: right side
@@ -9,6 +9,94 @@ BBCar::BBCar( PwmOut &pin_servo0, PwmOut &pin_servo1, Ticker &servo_ticker ):ser
     servo0.set_speed(0);
     servo1.set_speed(0);
     servo_ticker.attach(callback(this, &BBCar::controlWheel), 20ms);
+}
+
+void BBCar::park(int dir, int d1, int d2, int left_turn_time) {
+    switch (dir) {
+        case 1:
+            goStraight(100);
+            ThisThread::sleep_for(d2 * 6 * 10);
+
+            // left turn 90 degree
+            stop();
+            ThisThread::sleep_for(400);
+            
+            turn(70, 0.7);
+            ThisThread::sleep_for(left_turn_time);
+
+            goStraight(100);
+            ThisThread::sleep_for(d1 * 8 * 10);
+
+            stop();
+            break;
+
+        case 2:
+            turn(70, 0.7);
+            ThisThread::sleep_for(left_turn_time + 100);
+
+            stop();
+            ThisThread::sleep_for(400);
+
+            if (d2 > 19) {
+                goStraight(100);
+                ThisThread::sleep_for((d2-19) * 5 * 10);
+            }
+
+            stop();
+            ThisThread::sleep_for(400);
+            
+            turn(70, 0.7);
+            ThisThread::sleep_for(left_turn_time + 100);
+
+            stop();
+            ThisThread::sleep_for(100);
+
+            goStraight(100);
+            ThisThread::sleep_for((d1 + 5) * 8 * 10);
+
+            stop();
+            break;
+
+        case 3:
+            turn(-70, 0.7);
+            ThisThread::sleep_for(left_turn_time);
+
+            stop();
+            ThisThread::sleep_for(400);
+
+            goStraight(100);
+            ThisThread::sleep_for((d2 + 5) * 5 * 10);
+
+            stop();
+            ThisThread::sleep_for(300);
+
+            turn(70, 0.7);
+            ThisThread::sleep_for(left_turn_time + 100);
+
+            stop();
+            ThisThread::sleep_for(300);
+
+            goStraight(100);
+            ThisThread::sleep_for((d1 + 7) * 8 * 10);
+
+            stop();
+            break;
+
+        case 4:
+            break;
+
+        case 5:
+            turn(70, 0.7);
+            ThisThread::sleep_for(left_turn_time);
+
+            stop();
+            break;
+
+        default:
+            break;
+    }
+
+    return;
 }
 
 void BBCar::controlWheel(){
@@ -52,9 +140,9 @@ void BBCar::turn( double speed, double factor ){
     }
     else if(factor<0){
         servo0.set_factor(1);
-        servo1.set_factor(-factor);
+        servo1.set_factor(-factor * NORMAL_FACTOR);
     }
-    servo0.set_speed(speed);
+    servo0.set_speed(speed*1.35);
     servo1.set_speed(-speed);
 
 }

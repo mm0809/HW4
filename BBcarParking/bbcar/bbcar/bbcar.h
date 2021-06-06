@@ -24,6 +24,8 @@ class BBCar{
 		// limit the value by max and min
 		float clamp( float value, float max, float min );
 		int turn2speed( float turn );
+
+        void park(int dir, int d1, int d2, int left_turn_time);
 };
 
 #endif

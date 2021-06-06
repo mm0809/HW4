@@ -13,7 +13,7 @@ parallax_servo::parallax_servo (PwmOut& pin) {
 void parallax_servo::set_speed( double value ) {
     target_pwm_value = value * factor;
     // you can determine ramping factor formula by yourself
-    ramping_factor = abs(target_pwm_value - current_pwm_value) / 50;
+    ramping_factor = abs(target_pwm_value - current_pwm_value) / 5;
     if (target_pwm_value > 200) target_pwm_value = 200;
     else if (target_pwm_value < -200) target_pwm_value = -200;
 }

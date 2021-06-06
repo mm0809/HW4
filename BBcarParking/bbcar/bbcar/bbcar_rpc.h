@@ -8,4 +8,7 @@ void RPC_stop(Arguments *in, Reply *out);
 void RPC_goStraight(Arguments *in, Reply *out);
 void RPC_turn(Arguments *in, Reply *out);
 
+// HW parking
+void RPC_park(Arguments *in, Reply *out);
+
 #endif
