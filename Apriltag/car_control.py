@@ -61,10 +61,11 @@ def get():
                 times = 0
         if k3=='D':
             print ("left", times)
-            left_turn_time = input("left_turn_time: ")
-            front_or_back = input("front_or_back(1: front, 0: back): ")
+            #left_turn_time = input("left_turn_time: ")
+            #front_or_back = input("front_or_back(1: front, 0: back): ")
 
-            s.write(("/park/run 5 " + str(front_or_back) +" 1 " + str(left_turn_time) +"\n").encode())
+            s.write("/turn/run 70 0.7 \n".encode())
+            #s.write(("/park/run 5 " + str(front_or_back) + " 1 " + str(left_turn_time) +"\n").encode())
         s.write("/stop/run \n".encode())
     elif k=='t':
         print ("call rpc_park")
@@ -87,8 +88,11 @@ def get():
 if len(sys.argv) < 1:
     print ("No port input")
 s = serial.Serial(sys.argv[1])
+
+
 while True:
     a = s.readline()
     print("s.read: ", a.decode())
+
 while get():
     i = 0
