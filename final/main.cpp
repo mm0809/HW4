@@ -30,6 +30,7 @@ void goR(int speed0, int speed1);
 
 
 int main() {
+    printf("ready\r\n");
     //for xbee UART
     //char buf[256], outbuf[256];
     //FILE *devin = fdopen(&xbee, "r");
@@ -51,26 +52,33 @@ int main() {
     //    //char cmd = receive_from_cam();
     //}
     while(1) {
-        if (state == 0 && cam.readable()) {
-            char recv[1];
-            cam.read(recv, sizeof(recv));
-            printf("%c\r\n", recv[0]);
+        printf("state: %d\r\n", state);
+        if (state == 0) {
+            if (cam.readable()) {
+                char recv[1];
+                cam.read(recv, sizeof(recv));
+                printf("%c\r\n", recv[0]);
 
-            if (recv[0] == 'F') {
-                goF(80);
-            } else if (recv[0] == 'L') {
-                goL(40, -100);
-            } else if (recv[0] == 'R') {
-                goR(90, -60);
+                if (recv[0] == 'F') {
+                    goF(80);
+                } else if (recv[0] == 'L') {
+                    goL(40, -100);
+                } else if (recv[0] == 'R') {
+                    goR(90, -60);
+                }
             }
 
             float distance = get_dis();
             if (state == 0 && distance <= 15) {
                 state = 1;
                 car.stop();
-                clear_cam_UART_buf();
+                printf("sleep for 1000ms..\r\n");
+                ThisThread::sleep_for(1000ms);
+                printf("sleep for end\r\n");
+                //clear_cam_UART_buf();
             }
         } else if (state == 1) {
+            ThisThread::sleep_for(1000ms);
             ask_for_apriltag_angle();
             char cmd = receive_from_cam();
             printf("april: %c\r\n", cmd);
@@ -132,10 +140,14 @@ void clear_cam_UART_buf(void)
 
 void ask_for_apriltag_angle(void) 
 {
-    char s[] = "a";
+    char s[1] = {'a'}; // "a"
+    char t;
     cam.write(s, sizeof(s));
-    while (t != 'K')
-        char t = receive_from_cam();
+    t = receive_from_cam();
+    while (t != 'K') {
+        t = receive_from_cam();
+        printf("%c\r\n", t);
+    }
     printf("cam check! %c\r\n", t);
 }
 
@@ -143,6 +155,7 @@ char receive_from_cam(void)
 {
     while (1) {
         if (cam.readable()) {
+            //printf("receive_from_cam\r\n");
             char recv[1];
             cam.read(recv, sizeof(recv));
 

@@ -18,6 +18,7 @@ def find_line_test():
     a = (0, 0, 160, 55)
     lines = img.find_lines(roi = a)
     print(len(lines))
+    uart.write(("T").encode())
     if (len(lines) == 2):
         rx1 = (lines[0].x1()+lines[1].x1())/2
         ry1 = (lines[0].y1()+lines[1].y1())/2
@@ -77,9 +78,10 @@ def april_tag_detact():
         print("#%d!" % print_args)
         #uart.write(("#%d!" % print_args).encode())
     if cnt is 0:
-        uart.write(("#z!").encode())
+        uart.write(("z").encode())
 
 uart = pyb.UART(3,9600,timeout_char=1000)
+tmp = ""
 while(True):
     clock.tick()
     if enable_lens_corr: img.lens_corr(1.8) # for 2.8mm lens...
@@ -87,10 +89,28 @@ while(True):
     #UART
     msg = uart.readline()
     if msg is not None:
-        print(a.decode())
-
-    #run function
-    if (task_state == 1):
-        find_line_test()
-    elif (task_state == 2):
+        #print(msg.decode())
+        print("read: ", msg)
+        if (msg.decode() != '\0'):
+            tmp += msg.decode()
+            print("tmp: ", tmp)
+    if tmp == "a":
+        print(1)
+        task_state = 2
+        tmp = ""
+        print("send uart")
+        uart.write(('K').encode())
+        print("send K done")
         april_tag_detact()
+
+    if task_state == 1:
+        find_line_test()
+   #print(sensor.get_windowing())
+   # `merge_distance` controls the merging of nearby lines. At 0 (the default), no
+   # merging is done. At 1, any line 1 pixel away from another is merged... and so
+   # on as you increase this value. You may wish to merge lines as line segment
+   # detection produces a lot of line segment results.
+
+   # `max_theta_diff` controls the maximum amount of rotation difference between
+   # any two lines about to be merged. The default setting allows for 15 degrees.
+
